@@ -5,26 +5,11 @@
 #include <vector>
 #include <map>
 #include <boost/program_options.hpp>
-#include <utf8.h>
+#include "encoding.h"
 
 using namespace std;
 using namespace boost::program_options;
-
-utf8::unchecked::iterator<string::iterator> utf8_begin(string &str) {
-  return utf8::unchecked::iterator<string::iterator>(str.begin());
-}
-
-utf8::unchecked::iterator<string::const_iterator> utf8_begin(const string &str) {
-  return utf8::unchecked::iterator<string::const_iterator>(str.begin());
-}
-
-utf8::unchecked::iterator<string::iterator> utf8_end(string &str) {
-  return utf8::unchecked::iterator<string::iterator>(str.end());
-}
-
-utf8::unchecked::iterator<string::const_iterator> utf8_end(const string &str) {
-  return utf8::unchecked::iterator<string::const_iterator>(str.end());
-}
+using namespace encoding;
 
 struct SebException : exception {
   string msg;
@@ -35,52 +20,6 @@ struct SebException : exception {
 
   const char* what() const noexcept {
     return msg.c_str();
-  }
-};
-
-class Mapper {
-  map<uint32_t,uint32_t> forward;
-  map<uint32_t,uint32_t> backward;
-
-public:
-
-  Mapper(const string& filename) {
-    ifstream file(filename.c_str());
-    uint32_t chr;
-    string token;
-    for (int i = 0; file >> token; i++) {
-      if (utf8::distance(token.begin(), token.end()) == 1) {
-        chr = utf8::peek_next(token.begin(),token.end());
-      } else if (token == "space") {
-        chr = ' ';
-      } else if (token == "\\n") {
-        chr = '\n';
-      } else {
-        throw SebException("alphabet token not recognized: " + token);
-      }
-      if (forward.count(chr) > 0) {
-        throw SebException("The symbol " + token + " appears morea than once in the alphabet");
-      }
-      forward[chr] = i;
-      backward[i] = chr;
-    }
-    file.close();
-  }
-
-  bool containsChr(uint32_t x) const {
-    return forward.count(x) > 0;
-  }
-
-  int size() const {
-    return forward.size();
-  }
-
-  uint32_t charToInt(uint32_t x) const {
-    return forward.find(x)->second;
-  }
-
-  uint32_t intToChar(uint32_t x) const {
-    return backward.find(x)->second;
   }
 };
 
