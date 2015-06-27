@@ -5,7 +5,7 @@
 #include <vector>
 #include <map>
 #include <boost/program_options.hpp>
-#include "encoding.h"
+#include "../encoding.h"
 
 using namespace std;
 using namespace boost::program_options;
