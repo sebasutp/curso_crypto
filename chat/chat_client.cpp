@@ -1,16 +1,41 @@
 
 #include "peer_router.h"
 #include <iostream>
+#include <sodium.h>
 
 using namespace std;
 using namespace zmqpp;
+
+unsigned char key[32] = "Esta es mi llave";
+uint64_t nonce = 0;
+
+void putEncryptedMessage(message& m, const string& plain) {
+  const char* text = plain.c_str();
+  uint64_t mynonce = nonce++;
+  unsigned char enc[plain.size()];
+  crypto_stream_salsa20_xor(enc, (unsigned char*)text, plain.size(), (unsigned char*)&mynonce, key);
+  string encrypted((const char*)enc, plain.size());
+  m << mynonce << encrypted;
+}
+
+string getDecryptedMessage(message &m) {
+  uint64_t mynonce;
+  string encrypted;
+  m >> mynonce >> encrypted;
+  const char* enc = encrypted.c_str();
+  unsigned char plain[encrypted.size()];
+  crypto_stream_salsa20_xor(plain, (unsigned char*)enc, encrypted.size(), (unsigned char*)&mynonce, key);
+  return string((const char*)plain, encrypted.size());
+}
 
 class ChatClient : public Listener {
   string myname;
   public:
     void recv_message(zmqpp::message& msg, zmqpp::socket& skt) {
       string sender, text;
-      msg >> sender >> text;
+      //msg >> sender >> text;
+      sender = getDecryptedMessage(msg);
+      text = getDecryptedMessage(msg);
       cout << sender << ": " << text << endl;
     }
 
@@ -25,7 +50,9 @@ class ChatClient : public Listener {
           skt.send(msg);
           finish();
         } else {
-          msg << myname << text;
+          //msg << myname << text;
+          putEncryptedMessage(msg, myname);
+          putEncryptedMessage(msg, text);
           cout << "Sending: " << text << endl;
           broadcast_peer(skt,msg);
         }
@@ -42,6 +69,9 @@ class ChatClient : public Listener {
 };
 
 int main() {
+  if (sodium_init() == -1) {
+    return 1;
+  }
   ChatClient chat;
   string myname;
   cout << "Write your name here: ";
