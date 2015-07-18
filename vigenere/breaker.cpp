@@ -44,23 +44,33 @@ double logp(int xn, const dmat& lang_model) {
   return log(ans);
 }
 
-double logp(int xnext, int xprev, const dmat& lang_model) {
+/*double logp(int xnext, int xprev, const dmat& lang_model) {
   return log(lang_model[xprev][xnext]) - logp(xprev, lang_model);
-}
+}*/
 
 double getKey(vector<unsigned int>& answer, const vector<unsigned int>& cipher, const dmat& lang_model, int key_len) {
   int alph = lang_model.size();
   double tot_prob = -1e100;
+  //Compute probabilities just once
+  vector<double> logmarginal(alph);
+  dmat logcond{boost::extents[alph][alph]};
+  for (int xprev=0; xprev<alph; xprev++) {
+    logmarginal[xprev] = logp(xprev, lang_model);
+    for (int xnext=0; xnext<alph; xnext++) {
+      logcond[xnext][xprev] = log(lang_model[xprev][xnext]) - (double)logmarginal[xprev];
+    }
+  }
+
+  //now perform optimization
   for (int k0=0; k0<alph; k0++) {
     dmat results {boost::extents[key_len+1][alph]};
     imat best_keys {boost::extents[key_len+1][alph]};
     for (int pos=key_len; pos>0; pos--) {
       for (int prev_key=0; prev_key<alph; prev_key++) {
         if (pos == key_len) {
-          double ans = logp((cipher[0] - k0 + alph) % alph, lang_model);
+          double ans = logmarginal[(cipher[0] - k0 + alph) % alph];
           for (int x = key_len; x < cipher.size(); x+=key_len) {
-            ans += logp( (cipher[x] - k0 + alph) % alph,
-                (cipher[x-1] - prev_key + alph) % alph, lang_model);
+            ans += logcond[(cipher[x] - k0 + alph) % alph][(cipher[x-1] - prev_key + alph) % alph];
           }
           results[pos][prev_key] = ans;//return ans
           continue;
@@ -70,8 +80,7 @@ double getKey(vector<unsigned int>& answer, const vector<unsigned int>& cipher, 
         for (int k=0; k<alph; k++) {
           double ans = 0;
           for (int x = pos; x < cipher.size(); x+=key_len) {
-            ans += logp( (cipher[x] - k + alph) % alph,
-                (cipher[x-1] - prev_key + alph) % alph, lang_model);
+            ans += logcond[(cipher[x] - k + alph) % alph][(cipher[x-1] - prev_key + alph) % alph];
           }
           ans += results[pos+1][k]; //maxProb(pos+1, k)
           if (ans > tot_ans) {
