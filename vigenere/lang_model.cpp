@@ -7,6 +7,7 @@
 #include <map>
 #include <boost/program_options.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/multi_array.hpp>
 #include "../encoding.h"
 
 using namespace std;
@@ -14,17 +15,6 @@ using namespace boost::program_options;
 using namespace encoding;
 
 typedef long long int LL;
-
-string myupper(const string& str) {
-  string ans;
-  for (char c : str) {
-    if (c >= 'a' && c <= 'z')
-      c = c - 'a' + 'A';
-    if (c >= 'A' && c <= 'Z')
-      ans.push_back(c);
-  }
-  return ans;
-}
 
 int main(int argc, char **argv) {
   try {
@@ -56,7 +46,7 @@ int main(int argc, char **argv) {
     }
 
     Mapper m(alphabet);
-    vector< vector<int> > matrix(m.size(), vector<int>(m.size(),laplace_smooth));
+    boost::multi_array<int,2> matrix(boost::extents[m.size()][m.size()]);
     string line;
     LL N = laplace_smooth*((LL)m.size())*m.size();
     while (getline(cin, line)) {
