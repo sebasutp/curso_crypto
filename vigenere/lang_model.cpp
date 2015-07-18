@@ -78,7 +78,7 @@ int main(int argc, char **argv) {
     }
     for (int i=0; i<m.size(); i++) {
       for (int j=0; j<m.size(); j++) {
-        cout << ((double)matrix[i][j] / (double)N) << " ";
+        cout << ((double)(matrix[i][j] + laplace_smooth) / (double)N) << " ";
       }
       cout << endl;
     }
