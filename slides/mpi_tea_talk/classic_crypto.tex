@@ -1,0 +1,176 @@
+
+
+\documentclass{beamer}
+%\usetheme{mpiis} % Tema de la presentación
+\usetheme{Warsaw}
+\mode<presentation>
+%%%% packages  %%%%
+%\usepackage[spanish]{babel}
+\usepackage{pgf}
+\usepackage[T1]{fontenc}
+\usepackage[latin1]{inputenc}
+\usepackage{geometry}
+\usepackage{shadethm}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsxtra}
+\usepackage{amstext}
+\usepackage{latexsym}
+\usepackage{dsfont} % Para \mathds{N}
+\usepackage[all]{xy}
+\usepackage{graphicx}
+\usepackage{epsfig}% para los ejemplos con postscript.
+\usepackage{verbatim}
+\usepackage{hyperref}
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+\newcommand{\vb}{\mathbf}
+\newcommand{\normal}{\mathcal{N}}
+\DeclareMathOperator{\Tr}{Tr}
+%\renewcommand\bibname{References}
+
+\setlength{\textfloatsep}{5pt}
+
+\begin{document}
+
+  \title[Classic cryptography and cryptanalysis]{Classic cryptography and cryptanalysis}
+  \author{Sebastian Gomez-Gonzalez}
+  \institute{Max Planck Institute - Intelligent Systems, 
+    Germany}
+  \frame{\titlepage}
+
+  \section{Introduction}
+
+  \subsection{Motivation}
+
+  \begin{frame}{Motivation}
+   \begin{block}{Classic Cryptography}
+     \begin{itemize}
+       \item Was based more in intuition than mathematical proofs
+       \item A good way to introduce cryptography and cryptanalysis
+       \item It show us why we should not trust only in intuition for security
+       \item Goal: Not clearly defined, but in general is to prevent understanding of
+         messages to an adversary.
+       \item Inverse: It is also clear, that any cipher should have an inverse to recover
+         the original plain-text.
+     \end{itemize}
+   \end{block}
+  \end{frame}
+
+  \section{Substitution ciphers}
+
+  \subsection{Ceasar Cipher}
+  \begin{frame}{Ceasar cipher}
+    Example: "QEBNRFZHYOLTKCLUGRJMPLSBOQEBIXWVALD"
+    \pause
+    \begin{block}{How does it work?}
+      By shifting the alphabet by some amount (usually 3 characters back)
+    \end{block}
+  \end{frame}
+
+  \begin{frame}[fragile=singleslide]\frametitle{Ceasar cipher}
+   Example: "QEBNRFZHYOLTKCLUGRJMPLSBOQEBIXWVALD"
+   \begin{block}{Example}
+     \begin{verbatim}
+     Plain:    ABCDEFGHIJKLMNOPQRSTUVWXYZ
+     Cipher:   XYZABCDEFGHIJKLMNOPQRSTUVW
+     \end{verbatim}
+   \end{block}
+   The decrypted example is: "THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG"
+  \end{frame}
+
+  \begin{frame}{Ceasar cipher}
+   \begin{block}{Analysis}
+     Once you know how it works, it doesn't provide any security!
+     \begin{itemize}
+       \item Even if you don't know the shift amount, there are only 26 possibilities. Just try them all!
+       \item One solution: Use a generic substitution cipher (A permutation of the alphabet)
+     \end{itemize}
+   \end{block}
+  \end{frame}
+
+  \subsection {Substitution cipher}
+
+  \begin{frame}{Subsitution cipher}
+    Encrypted text: "SIAAZQLKBAVAZOARFPBLUAOAR"
+    \begin{block}{How does it work?}
+      Same as Caesar, but instead of taking a shift of the alphabet (26 possible keys) take a permutation
+      (That is $26! \approx 2^{88}$ possible keys). Brute force is no longer a good solution! \\
+      \pause
+      Weakness:
+      \begin{itemize}
+        \item Same letters in the cipher text correspond to same letters in the plain text
+        \item For instance, in the previous text the 'A' appears more often than the other letters (Likely 
+          to be an 'E' in the plaintext)
+        \item For longer text is easy to break knowing the original language (Bigrams 'TH', Trigrams 'THE', ...)
+      \end{itemize}
+    \end{block}
+  \end{frame}
+
+  \begin{frame}[fragile=singleslide]\frametitle{Subsitution cipher}
+    Encrypted text: "SIAAZQLKBAVAZOARFPBLUAOAR"
+    \begin{verbatim}
+    Plaintext alphabet:  ABCDEFGHIJKLMNOPQRSTUVWXYZ
+    Ciphertext alphabet: ZEBRASCDFGHIJKLMNOPQTUVWXY
+    \end{verbatim}
+    Plain text: "FLEE AT ONCE, WE ARE DISCOVERED"
+  \end{frame}
+
+  \section{Vigenere Cipher}
+
+  \subsection{Vigenere Cipher}
+
+  \begin{frame}{Vigenere cipher}
+    \begin{block}{How does it work?}
+      \begin{itemize}
+        \item Give to every letter in the alphabet $\Sigma$ a number between 0 and $|\Sigma|-1$ (In case of English,
+          between 0 and 25).
+        \item Choose a password for encryption using letters from the alphabet as well
+        \item Repeat the password as many times as needed to have the same lenght than the plain text
+        \item Add the plain text and the repeated password modulo $|\Sigma|$
+      \end{itemize}
+    \end{block}
+    \begin{tabular}{ c | c  | c  | c  | c  | c  | c  | c  | c  | c  | c  | c  | c}
+      a  &  b  &  c  &  d  &  e  &  f  &  g  &  h  &  i  &  j  &  k  &  l  &  m  \\  
+      0  &  1  &  2  &  3  &  4  &  5  &  6  &  7  &  8  &  9  &  10  &  11  &  12  \\
+      \hline
+      n  &  o  &  p  &  q  &  r  &  s  &  t  &  u  &  v  &  w  &  x  &  y  &  z \\
+      13 & 14  &  15  &  16  &  17  &  18  &  19  &  20  &  21  &  22  &  23  &  24  &  25
+    \end{tabular}
+  \end{frame}
+
+  \begin{frame}[fragile=singleslide]\frametitle{Vigenere Example}
+    \begin{tabular}{ c | c  | c  | c  | c  | c  | c  | c  | c  | c  | c  | c  | c}
+      a  &  b  &  c  &  d  &  e  &  f  &  g  &  h  &  i  &  j  &  k  &  l  &  m  \\  
+      0  &  1  &  2  &  3  &  4  &  5  &  6  &  7  &  8  &  9  &  10  &  11  &  12  \\
+      \hline
+      n  &  o  &  p  &  q  &  r  &  s  &  t  &  u  &  v  &  w  &  x  &  y  &  z \\
+      13 & 14  &  15  &  16  &  17  &  18  &  19  &  20  &  21  &  22  &  23  &  24  &  25
+    \end{tabular}
+    
+    \begin{verbatim}
+    Key: LEMON
+    Plaintext:  ATTACKATDAWN
+    Repeated:   LEMONLEMONLE
+    Ciphertext: LXFOPVEFRNHR
+    \end{verbatim}
+  \end{frame}
+
+  \begin{frame}{Vigenere analysis}
+    \begin{block}{Strenghts}
+      \begin{itemize}
+        \item The password can be long enough such that brute force is also impractical
+        \item Notice that the same character in the plain text can become different characters in the cipher text
+      \end{itemize}
+    \end{block}
+    \pause
+    \begin{block}{Weaknesses}
+      \begin{itemize}
+        \item If we know part of the plain text, you know part of the key and probably break the rest easily.
+        \item But, can we break the Vigenere without knowing part of the text (Like the other methods)?
+      \end{itemize}
+    \end{block}
+  \end{frame}
+
+\end{document}
