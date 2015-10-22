@@ -173,4 +173,43 @@
     \end{block}
   \end{frame}
 
+  \subsection{Criptanalysis}
+
+  \begin{frame}{Vigenere Cryptanalysis}
+    \begin{block}{Classic Attacks}
+      \begin{itemize}
+        \item Usually need long texts
+        \item Usually are not fully automatic (Require human guess and supervision)
+      \end{itemize}
+    \end{block}
+    Can we do better (with modern methods)?
+  \end{frame}
+
+  \begin{frame}{Vigenere Cryptanalysis}
+    \begin{block}{Basic Idea}
+      \begin{itemize}
+        \item Build a simple language model (Markov model)
+          $p(x_1,x_2,\dots,x_n) = p(x_1)p(x_2|x_1)p(x_3|x_2)\dots p(x_n|x_{n-1})$
+        \item Output the key that when used to decrypt provides the plain text with higher probability
+        \item Lets also suppose for the moment we know the key length $K$
+        \item Brute force approach $O(n|\Sigma|^K)$ ($n$ is the size of the plain text)
+          \pause
+        \item With the independence assumptions it is possible to build a DP algorithm with complexity 
+          $O(|\Sigma|^3n)$ in time and $O(|\Sigma|K)$ in space         
+        \item As the complexity is polynomial and not very high, it is possible to simply run the
+          algorithm for many values of $K$
+      \end{itemize}
+    \end{block} 
+  \end{frame}
+
+  \begin{frame}{Conclusions}
+    \begin{block}{Conclusions}
+      \begin{itemize}
+        \item First, a demo \pause
+        \item Don't thrust your security intuition, thrust in algorithms whose strenght is mathematically well supported \pause
+        \item Thanks, that is all \pause
+      \end{itemize}
+    \end{block}    
+  \end{frame}
+
 \end{document}

@@ -1,1 +1,8 @@
 *.o
+*.aux
+*.log
+*.nav
+*.out
+*.snm
+*.toc
+*.swp
