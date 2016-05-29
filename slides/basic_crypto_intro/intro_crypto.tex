@@ -1,0 +1,128 @@
+
+
+\documentclass{beamer}
+%\usetheme{mpiis} % Tema de la presentación
+\usetheme{Warsaw}
+\mode<presentation>
+%%%% packages  %%%%
+%\usepackage[spanish]{babel}
+\usepackage{pgf}
+\usepackage[T1]{fontenc}
+\usepackage[latin1]{inputenc}
+\usepackage{geometry}
+\usepackage{shadethm}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsxtra}
+\usepackage{amstext}
+\usepackage{latexsym}
+\usepackage{dsfont} % Para \mathds{N}
+\usepackage[all]{xy}
+\usepackage{graphicx}
+\usepackage{epsfig}% para los ejemplos con postscript.
+\usepackage{verbatim}
+\usepackage{hyperref}
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+\newcommand{\vb}{\mathbf}
+\newcommand{\normal}{\mathcal{N}}
+\DeclareMathOperator{\Tr}{Tr}
+%\renewcommand\bibname{References}
+
+\setlength{\textfloatsep}{5pt}
+
+\begin{document}
+
+  \title[Introduction to classic cryptography]{Introduction to classic cryptography}
+  \author{Sebastian Gomez-Gonzalez}
+  \institute{Max Planck Institute - Intelligent Systems, 
+    Germany}
+  \frame{\titlepage}
+
+  \section{Introduction}
+
+  \subsection{Motivation}
+
+  \begin{frame}{Privacy}
+   \begin{block}{Privacy in the communications}
+     \begin{itemize}
+       \item Messages can usually be captured.
+       \item Internet messages and wireless communications are easy to eavesdrop.
+       \item The idea: Encode the message so that only the desired receiver can read it.
+     \end{itemize}
+   \end{block}
+  \end{frame}
+
+  \section{Substitution ciphers}
+
+  \subsection{Ceasar Cipher}
+  \begin{frame}{Ceasar cipher}
+    Example: "QEBNRFZHYOLTKCLUGRJMPLSBOQEBIXWVALD"
+    \pause
+    \begin{block}{How does it work?}
+      By shifting the alphabet by some amount (usually 3 characters back)
+    \end{block}
+  \end{frame}
+
+  \begin{frame}[fragile=singleslide]\frametitle{Ceasar cipher}
+   Example: "QEBNRFZHYOLTKCLUGRJMPLSBOQEBIXWVALD"
+   \begin{block}{Example}
+     \begin{verbatim}
+     Plain:    ABCDEFGHIJKLMNOPQRSTUVWXYZ
+     Cipher:   XYZABCDEFGHIJKLMNOPQRSTUVW
+     \end{verbatim}
+   \end{block}
+   The decrypted example is: "THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG"
+  \end{frame}
+
+  \begin{frame}{Ceasar cipher}
+   \begin{block}{Analysis}
+     Once you know how it works, it doesn't provide any security!
+     \begin{itemize}
+       \item Encryption = Algorithm + Secret Key
+       \item See for example a substitution cipher
+     \end{itemize}
+   \end{block}
+  \end{frame}
+
+  \subsection {Substitution cipher}
+
+  \begin{frame}{Subsitution cipher}
+    Encrypted text: "SIAAZQLKBAVAZOARFPBLUAOAR"
+    \begin{block}{How does it work?}
+      Same as Caesar, but instead of taking a shift of the alphabet (26 possible keys) take a permutation
+      (That is $26! \approx 2^{88}$ possible keys). Brute force is no longer a good solution! \\ 
+    \end{block}
+  \end{frame}
+
+  \begin{frame}[fragile=singleslide]\frametitle{Subsitution cipher}
+    Encrypted text: "SIAAZQLKBAVAZOARFPBLUAOAR"
+    \begin{verbatim}
+    Plaintext alphabet:  ABCDEFGHIJKLMNOPQRSTUVWXYZ
+    Ciphertext alphabet: ZEBRASCDFGHIJKLMNOPQTUVWXY
+    \end{verbatim}
+    Plain text: "FLEE AT ONCE, WE ARE DISCOVERED"
+  \end{frame}
+
+  \begin{frame}{Analysis}
+    Encrypted text: "SIAAZQLKBAVAZOARFPBLUAOAR" \\
+    Plain text: "FLEE AT ONCE, WE ARE DISCOVERED"
+    \begin{itemize}
+      \item Same letters in the cipher text correspond to same letters in the plain text
+      \item For instance, in the previous text the 'A' appears more often than the other letters (Likely 
+        to be an 'E' in the plaintext)
+      \item For longer text is easy to break knowing the original language (Bigrams 'TH', Trigrams 'THE', ...)
+    \end{itemize}
+  \end{frame}
+
+  \begin{frame}{Final remarks}
+    \begin{block}{Final remarks}
+      \begin{itemize}
+        \item Design secure encryption algorithms is hard
+        \item Use encryption algorithms recommended by experts
+      \end{itemize}
+    \end{block}    
+  \end{frame}
+
+\end{document}
